@@ -77,8 +77,8 @@ module.exports = async (req, res) => {
 
       // 1) Lista de destinatários para o <select>
       if (mode === 'destinatarios') {
-        // GET /rest/v1/mensagens?select=nome,cpf
-        const data = await supabaseSelect('mensagens?select=nome,cpf');
+        // GET /rest/v1/Mensagens?select=nome,cpf
+        const data = await supabaseSelect('Mensagens?select=nome,cpf');
 
         const mapa = new Map();
         (data || []).forEach((r) => {
@@ -102,10 +102,10 @@ module.exports = async (req, res) => {
           .json({ ok: false, error: 'Informe nome e CPF.' });
       }
 
-      // GET /rest/v1/mensagens?select=...&cpf=eq.123&nome=ilike.*lennon*
+      // GET /rest/v1/Mensagens?select=...&cpf=eq.xxx&nome=ilike.*nome*
       const encodedNome = encodeURIComponent(nomeBusca);
       const query =
-        'mensagens?select=id,nome,cpf,mensagem,autor,criado_em' +
+        'Mensagens?select=id,nome,cpf,mensagem,autor,criado_em' +
         `&cpf=eq.${cpfBusca}` +
         `&nome=ilike.*${encodedNome}*` +
         '&order=criado_em.asc';
@@ -141,7 +141,7 @@ module.exports = async (req, res) => {
         }
       ];
 
-      const data = await supabaseInsert('mensagens', rows);
+      const data = await supabaseInsert('Mensagens', rows);
 
       return res.status(201).json({ ok: true, registro: data?.[0] });
     }
