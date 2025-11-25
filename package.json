@@ -4,8 +4,5 @@
   "private": true,
   "scripts": {
     "vercel-build": "echo \"no build step\""
-  },
-  "dependencies": {
-    "@supabase/supabase-js": "^1.35.7"
   }
 }
