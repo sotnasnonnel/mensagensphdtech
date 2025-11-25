@@ -1,10 +1,5 @@
 // api/mensagens.js
 
-// Garante que a função rode em Node 18 (tem fetch nativo)
-module.exports.config = {
-  runtime: 'nodejs18.x'
-};
-
 function normalizarCPF(cpf) {
   if (!cpf) return '';
   return cpf.replace(/\D/g, '');
@@ -25,6 +20,7 @@ function getSupabaseEnv() {
 
 async function supabaseSelect(pathWithQuery) {
   const { url, serviceKey } = getSupabaseEnv();
+
   const response = await fetch(url + '/rest/v1/' + pathWithQuery, {
     headers: {
       apikey: serviceKey,
@@ -44,6 +40,7 @@ async function supabaseSelect(pathWithQuery) {
 
 async function supabaseInsert(table, rows) {
   const { url, serviceKey } = getSupabaseEnv();
+
   const response = await fetch(url + '/rest/v1/' + table, {
     method: 'POST',
     headers: {
@@ -80,7 +77,7 @@ module.exports = async (req, res) => {
 
       // 1) Lista de destinatários para o <select>
       if (mode === 'destinatarios') {
-        // REST: /rest/v1/mensagens?select=nome,cpf
+        // GET /rest/v1/mensagens?select=nome,cpf
         const data = await supabaseSelect('mensagens?select=nome,cpf');
 
         const mapa = new Map();
@@ -105,7 +102,7 @@ module.exports = async (req, res) => {
           .json({ ok: false, error: 'Informe nome e CPF.' });
       }
 
-      // REST: /rest/v1/mensagens?select=...&cpf=eq.11737030632&nome=ilike.*lennon*
+      // GET /rest/v1/mensagens?select=...&cpf=eq.123&nome=ilike.*lennon*
       const encodedNome = encodeURIComponent(nomeBusca);
       const query =
         'mensagens?select=id,nome,cpf,mensagem,autor,criado_em' +
