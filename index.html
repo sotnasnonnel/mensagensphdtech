@@ -6,28 +6,102 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
-      --bg: #f3f4f6;
+      --bg: #f2f2f2;              /* Branco gelo */
       --bg-card: #ffffff;
-      --primary: #2563eb;
-      --primary-dark: #1d4ed8;
-      --primary-soft: #dbeafe;
-      --border-soft: #e5e7eb;
-      --text-main: #111827;
+      --primary: #c35e1e;         /* Terracotta (principal) */
+      --primary-dark: #b85236;    /* Terracotta avermelhado (hover) */
+      --primary-soft: #f7e0d0;    /* Terracotta bem clarinho para fundos */
+      --accent-blue: #26405d;     /* Azul (2ª principal) */
+      --accent-green: #00a49a;    /* Verde (apoio / sucesso) */
+      --border-soft: #e0e0e0;
+      --text-main: #1f2933;
       --text-muted: #6b7280;
       --danger: #b91c1c;
-      --success: #047857;
+      --success: #00a49a;         /* usa o verde como sucesso */
       --radius-lg: 12px;
       --radius-xl: 18px;
       --shadow-soft: 0 14px 30px rgba(15, 23, 42, 0.12);
       --transition-fast: 0.18s ease-out;
     }
 
+        /* topo */
+    .brand-header {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    /* logo PHD no topo */
+    .logo-phd {
+      display: block;
+      max-width: 140px;   /* tamanho máximo em telas pequenas */
+      width: 40vw;        /* 40% da largura da tela, mas limitado pelo max-width */
+      height: auto;
+    }
+
+    /* footer */
+    footer {
+      text-align: center;
+      padding: 8px 12px 14px;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .footer-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .footer-text span {
+      opacity: 0.8;
+    }
+
+    .footer-text strong {
+      font-weight: 600;
+    }
+
+    /* logo GerêncIA no rodapé */
+    .logo-gerencia {
+      display: block;
+      max-width: 120px;   /* máximo em telas pequenas */
+      width: 45vw;        /* 45% da largura da tela, limitado pelo max-width */
+      height: auto;
+      margin-top: 4px;
+      border-radius: 6px; /* opcional, pra ficar mais "produto" */
+    }
+
+    /* Em telas maiores, aumenta um pouco e deixa lado a lado */
+    @media (min-width: 640px) {
+      .logo-phd {
+        max-width: 170px;
+        width: 170px;
+      }
+
+      .logo-gerencia {
+        max-width: 160px;
+        width: 160px;
+      }
+
+      .footer-inner {
+        flex-direction: row;
+        justify-content: center;
+        gap: 10px;
+      }
+    }
+
+
     * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont,"Segoe UI",sans-serif;
-      background: radial-gradient(circle at top,#e5edff 0,#f9fafb 55%);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(195, 94, 30, 0.18) 0, transparent 55%),
+        radial-gradient(circle at top right, rgba(38, 64, 93, 0.16) 0, transparent 60%),
+        var(--bg);
       color: var(--text-main);
     }
 
@@ -44,26 +118,44 @@
     .card {
       background:var(--bg-card);
       border-radius:var(--radius-xl);
-      border:1px solid rgba(148,163,184,0.18);
+      border: 1px solid rgba(0, 0, 0, 0.04);
       box-shadow:var(--shadow-soft);
       padding:16px 14px 18px;
       position:relative;
       overflow:hidden;
     }
     .card::before {
-      content:""; position:absolute; inset:0;
-      background:radial-gradient(circle at top left,rgba(59,130,246,0.09) 0,transparent 55%);
-      opacity:0.85; pointer-events:none;
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at top left, rgba(195, 94, 30, 0.09) 0, transparent 55%),
+        radial-gradient(circle at top right, rgba(38, 64, 93, 0.06) 0, transparent 55%);
+      opacity: 0.95;
+      pointer-events: none;
     }
+
     .card-inner { position:relative; z-index:1; }
 
     .card-header { display:flex; align-items:center; gap:8px; margin-bottom:10px;}
     .card-header-icon {
-      width:32px; height:32px; border-radius:999px;
-      background:var(--primary-soft); display:flex; align-items:center; justify-content:center;
-      font-size:1rem;
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      background: var(--primary-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      color: var(--primary);
     }
-    .card-header-title { font-size:1rem; font-weight:600; }
+
+    .card-header-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--accent-blue);
+    }
+
     .card-header-subtitle { font-size:0.75rem; color:var(--text-muted); }
 
     .fields { display:flex; flex-direction:column; gap:8px; margin-bottom:10px;}
@@ -93,17 +185,38 @@
       transition:background-color var(--transition-fast), box-shadow var(--transition-fast), transform 0.07s ease-out, opacity var(--transition-fast);
       white-space:nowrap; -webkit-tap-highlight-color:transparent;
     }
-    .btn-primary { background:var(--primary); color:#ffffff; box-shadow:0 10px 20px rgba(37,99,235,0.4);}
-    .btn-primary:hover { background:var(--primary-dark); transform:translateY(-1px);}
-    .btn-secondary { background:#e5e7eb; color:#111827;}
-    .btn-secondary:hover { background:#d1d5db;}
+    .btn-primary {
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 10px 20px rgba(195, 94, 30, 0.4);
+    }
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: #ffffff;
+      color: var(--accent-blue);
+      border-radius: 999px;
+      border: 1px solid rgba(38, 64, 93, 0.18);
+    }
+    .btn-secondary:hover {
+      background: rgba(38, 64, 93, 0.06);
+    }
+
     .btn-ghost { background:transparent; color:var(--text-muted); padding-inline:10px;}
     .btn:disabled { opacity:0.6; cursor:default; transform:none; box-shadow:none;}
     .btn-icon { font-size:1rem; }
 
     .status-text { font-size:0.78rem; color:var(--text-muted);}
     .error-text { color:var(--danger); font-size:0.78rem; margin-top:3px;}
-    .success-text { color:var(--success); font-size:0.8rem; margin-top:4px;}
+    .success-text {
+      color: var(--success); /* agora é o verde #00a49a */
+      font-size: 0.8rem;
+      margin-top: 4px;
+    }
+
 
     .result-container {
       margin-top:8px; border-radius:var(--radius-lg);
@@ -153,9 +266,12 @@
 <body>
   <div class="page">
     <header>
-      <h1>Mensagens de Reconhecimento</h1>
+      <div class="brand-header">
+      </div>
+      <h1>Mensagens de Reconhecimento PHD 🎉👏</h1>
       <p>Veja a mensagem que deixaram para você e envie reconhecimento para outras pessoas.</p>
     </header>
+
 
     <main>
       <div class="shell">
@@ -169,7 +285,7 @@
                 <div>
                   <div id="consulta-title" class="card-header-title">Consultar sua mensagem</div>
                   <div class="card-header-subtitle">
-                    Digite seu nome e CPF exatamente como na planilha.
+                    Digite seu nome e CPF.
                   </div>
                 </div>
               </div>
@@ -184,7 +300,7 @@
                   <div class="field-group">
                     <label for="cpf-consulta">CPF</label>
                     <input type="text" id="cpf-consulta" inputmode="numeric" placeholder="00000000000 ou 000.000.000-00" />
-                    <small>Usado somente para localizar sua mensagem na planilha.</small>
+                    <small>Usado somente para localizar sua mensagem.</small>
                   </div>
                 </div>
 
@@ -209,7 +325,7 @@
                 <div>
                   <div id="envio-title" class="card-header-title">Enviar mensagem para outra pessoa</div>
                   <div class="card-header-subtitle">
-                    Selecione o nome a partir da planilha e use IA para se inspirar.
+                    Selecione o nome e use o GerêncIA para se inspirar.
                   </div>
                 </div>
               </div>
@@ -222,7 +338,7 @@
                       <select id="destinatario-select">
                         <option value="">Carregando nomes...</option>
                       </select>
-                      <small>Nomes carregados da tabela no Supabase.</small>
+                      <small></small>
                     </div>
 
                     <div class="field-group">
@@ -249,7 +365,7 @@
 
                   <div class="actions">
                     <button type="button" class="btn btn-secondary" id="btn-ia" aria-busy="false">
-                      <span class="btn-icon">🤖</span> Sugerir com IA
+                      <span class="btn-icon">🧠</span> Sugerir com IA
                     </button>
                     <button type="button" class="btn btn-ghost" id="btn-limpar">Limpar</button>
                   </div>
@@ -259,7 +375,7 @@
                   <div id="ai-suggestions" class="ai-suggestions-container" style="display:none;">
                     <div class="ai-suggestions-header">
                       <span>Sugestões de mensagem (IA)</span>
-                      <span class="ai-badge">DeepSeek</span>
+                      <span class="ai-badge">⚙️ GerêncIA</span>
                     </div>
                     <div class="ai-suggestions-list" id="ai-suggestions-list"></div>
                   </div>
@@ -286,8 +402,19 @@
     </main>
 
     <footer>
-      Interface demonstrativa · Backend na Vercel com Supabase e DeepSeek.
+      <div class="footer-inner">
+        <div class="footer-text">
+          <span>Desenvolvido por</span>
+          <strong>PHD Tech</strong>
+        </div>
+        <img
+          src="logoGerenciaV4.png"
+          alt="GerêncIA"
+          class="logo-gerencia"
+        />
+      </div>
     </footer>
+
   </div>
 
   <script>
