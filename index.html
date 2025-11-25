@@ -24,7 +24,11 @@
       --transition-fast: 0.18s ease-out;
     }
 
-        /* topo */
+    * {
+      box-sizing: border-box;
+    }
+
+    /* topo */
     .brand-header {
       display: flex;
       justify-content: center;
@@ -35,8 +39,8 @@
     /* logo PHD no topo */
     .logo-phd {
       display: block;
-      max-width: 140px;   /* tamanho máximo em telas pequenas */
-      width: 40vw;        /* 40% da largura da tela, mas limitado pelo max-width */
+      max-width: 140px;
+      width: 40vw;
       height: auto;
     }
 
@@ -66,11 +70,11 @@
     /* logo GerêncIA no rodapé */
     .logo-gerencia {
       display: block;
-      max-width: 120px;   /* máximo em telas pequenas */
-      width: 45vw;        /* 45% da largura da tela, limitado pelo max-width */
+      max-width: 120px;
+      width: 45vw;
       height: auto;
       margin-top: 4px;
-      border-radius: 6px; /* opcional, pra ficar mais "produto" */
+      border-radius: 6px;
     }
 
     /* Em telas maiores, aumenta um pouco e deixa lado a lado */
@@ -92,9 +96,6 @@
       }
     }
 
-
-    * { box-sizing: border-box; }
-
     body {
       margin: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -105,25 +106,56 @@
       color: var(--text-main);
     }
 
-    .page { min-height: 100vh; display:flex; flex-direction:column; }
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
 
-    header { padding:20px 16px 10px; text-align:center; }
-    header h1 { margin:0 0 6px; font-size:1.4rem; font-weight:700; letter-spacing:-0.02em;}
-    header p { margin:0; color:var(--text-muted); font-size:0.9rem;}
+    header {
+      padding: 20px 16px 10px;
+      text-align: center;
+    }
 
-    main { flex:1; padding:8px 10px 24px; }
-    .shell { max-width:640px; margin:0 auto; }
-    .stack { display:flex; flex-direction:column; gap:14px; }
+    header h1 {
+      margin: 0 0 6px;
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    header p {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    main {
+      flex: 1;
+      padding: 8px 10px 24px;
+    }
+
+    .shell {
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .stack {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
 
     .card {
-      background:var(--bg-card);
-      border-radius:var(--radius-xl);
+      background: var(--bg-card);
+      border-radius: var(--radius-xl);
       border: 1px solid rgba(0, 0, 0, 0.04);
-      box-shadow:var(--shadow-soft);
-      padding:16px 14px 18px;
-      position:relative;
-      overflow:hidden;
+      box-shadow: var(--shadow-soft);
+      padding: 16px 14px 18px;
+      position: relative;
+      overflow: hidden;
     }
+
     .card::before {
       content: "";
       position: absolute;
@@ -135,9 +167,18 @@
       pointer-events: none;
     }
 
-    .card-inner { position:relative; z-index:1; }
+    .card-inner {
+      position: relative;
+      z-index: 1;
+    }
 
-    .card-header { display:flex; align-items:center; gap:8px; margin-bottom:10px;}
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
     .card-header-icon {
       width: 32px;
       height: 32px;
@@ -156,40 +197,96 @@
       color: var(--accent-blue);
     }
 
-    .card-header-subtitle { font-size:0.75rem; color:var(--text-muted); }
-
-    .fields { display:flex; flex-direction:column; gap:8px; margin-bottom:10px;}
-    .field-group { display:flex; flex-direction:column; gap:3px;}
-    .field-group label { font-size:0.8rem; font-weight:500; color:#374151;}
-    .field-group small { font-size:0.72rem; color:var(--text-muted); }
-
-    input[type="text"], textarea, select {
-      border-radius:10px; border:1px solid var(--border-soft);
-      padding:9px 10px; font-size:0.9rem; outline:none;
-      transition:border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
-      background:#f9fafb; -webkit-tap-highlight-color:transparent;
-    }
-    textarea { resize:vertical; min-height:100px; }
-
-    input:focus, textarea:focus, select:focus {
-      border-color:var(--primary);
-      box-shadow:0 0 0 1px rgba(37,99,235,0.25);
-      background:#ffffff;
+    .card-header-subtitle {
+      font-size: 0.75rem;
+      color: var(--text-muted);
     }
 
-    .actions { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:6px;}
+    .fields {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .field-group label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #374151;
+    }
+
+    .field-group small {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    input[type="text"],
+    textarea,
+    select {
+      border-radius: 10px;
+      border: 1px solid var(--border-soft);
+      padding: 9px 10px;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color var(--transition-fast),
+        box-shadow var(--transition-fast),
+        background-color var(--transition-fast);
+      background: #f9fafb;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);
+      background: #ffffff;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 6px;
+    }
+
     .btn {
-      appearance:none; border-radius:999px; border:none;
-      padding:9px 14px; font-size:0.9rem; font-weight:500;
-      cursor:pointer; display:inline-flex; align-items:center; gap:6px;
-      transition:background-color var(--transition-fast), box-shadow var(--transition-fast), transform 0.07s ease-out, opacity var(--transition-fast);
-      white-space:nowrap; -webkit-tap-highlight-color:transparent;
+      appearance: none;
+      border-radius: 999px;
+      border: none;
+      padding: 9px 14px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background-color var(--transition-fast),
+        box-shadow var(--transition-fast),
+        transform 0.07s ease-out,
+        opacity var(--transition-fast);
+      white-space: nowrap;
+      -webkit-tap-highlight-color: transparent;
     }
+
     .btn-primary {
       background: var(--primary);
       color: #ffffff;
       box-shadow: 0 10px 20px rgba(195, 94, 30, 0.4);
     }
+
     .btn-primary:hover {
       background: var(--primary-dark);
       transform: translateY(-1px);
@@ -201,91 +298,179 @@
       border-radius: 999px;
       border: 1px solid rgba(38, 64, 93, 0.18);
     }
+
     .btn-secondary:hover {
       background: rgba(38, 64, 93, 0.06);
     }
 
-    .btn-ghost { background:transparent; color:var(--text-muted); padding-inline:10px;}
-    .btn:disabled { opacity:0.6; cursor:default; transform:none; box-shadow:none;}
-    .btn-icon { font-size:1rem; }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      padding-inline: 10px;
+    }
 
-    .status-text { font-size:0.78rem; color:var(--text-muted);}
-    .error-text { color:var(--danger); font-size:0.78rem; margin-top:3px;}
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: default;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-icon {
+      font-size: 1rem;
+    }
+
+    .status-text {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .error-text {
+      color: var(--danger);
+      font-size: 0.78rem;
+      margin-top: 3px;
+    }
+
     .success-text {
-      color: var(--success); /* agora é o verde #00a49a */
+      color: var(--success);
       font-size: 0.8rem;
       margin-top: 4px;
     }
 
-
     .result-container {
-      margin-top:8px; border-radius:var(--radius-lg);
-      border:1px dashed rgba(148,163,184,0.75);
-      padding:9px 10px; background:#f9fafb;
+      margin-top: 8px;
+      border-radius: var(--radius-lg);
+      border: 1px dashed rgba(148, 163, 184, 0.75);
+      padding: 9px 10px;
+      background: #f9fafb;
     }
-    .result-header { font-size:0.85rem; margin-bottom:4px; font-weight:500;}
+
+    .result-header {
+      font-size: 0.85rem;
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
 
     .message-bubble {
-      position:relative; border-radius:14px;
-      background:#ffffff; border:1px solid #e5e7eb;
-      padding:8px 10px 7px; margin-bottom:3px;
-      font-size:0.9rem; line-height:1.4;
+      position: relative;
+      border-radius: 14px;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      padding: 8px 10px 7px;
+      margin-bottom: 3px;
+      font-size: 0.9rem;
+      line-height: 1.4;
     }
-    .message-bubble::before {
-      content:"“"; position:absolute; left:8px; top:-14px;
-      font-size:22px; color:rgba(148,163,184,0.9);
-    }
-    .message-author { font-size:0.78rem; text-align:right; color:var(--text-muted); font-style:italic;}
 
-    .remetentes-list { display:flex; flex-wrap:wrap; gap:6px; margin:6px 0 4px;}
-    .btn-remetente { font-size:0.78rem; padding:6px 10px;}
+    .message-bubble::before {
+      content: "“";
+      position: absolute;
+      left: 8px;
+      top: -14px;
+      font-size: 22px;
+      color: rgba(148, 163, 184, 0.9);
+    }
+
+    .message-author {
+      font-size: 0.78rem;
+      text-align: right;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .remetentes-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 6px 0 4px;
+    }
+
+    .btn-remetente {
+      font-size: 0.78rem;
+      padding: 6px 10px;
+    }
 
     .ai-suggestions-container {
-      margin-top:8px; border-radius:var(--radius-lg);
-      border:1px dashed rgba(59,130,246,0.4);
-      padding:9px 10px; background:#eff6ff;
+      margin-top: 8px;
+      border-radius: var(--radius-lg);
+      border: 1px dashed rgba(59, 130, 246, 0.4);
+      padding: 9px 10px;
+      background: #eff6ff;
     }
-    .ai-suggestions-header { display:flex; justify-content:space-between; align-items:center; gap:6px; margin-bottom:4px;}
-    .ai-suggestions-header span { font-size:0.82rem; font-weight:500;}
+
+    .ai-suggestions-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .ai-suggestions-header span {
+      font-size: 0.82rem;
+      font-weight: 500;
+    }
+
     .ai-badge {
-      font-size:0.7rem; text-transform:uppercase; letter-spacing:0.06em;
-      background:rgba(37,99,235,0.08); padding:2px 6px; border-radius:999px; color:#1d4ed8;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: rgba(37, 99, 235, 0.08);
+      padding: 2px 6px;
+      border-radius: 999px;
+      color: #1d4ed8;
     }
-    .ai-suggestions-list { display:flex; flex-direction:column; gap:5px; max-height:210px; overflow-y:auto; -webkit-overflow-scrolling:touch;}
+
+    .ai-suggestions-list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      max-height: 210px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
     .ai-card {
-      border-radius:9px; background:#ffffff;
-      border:1px solid rgba(148,163,184,0.6);
-      padding:7px 9px; font-size:0.83rem; line-height:1.4;
-      display:flex; flex-direction:column; gap:6px;
+      border-radius: 9px;
+      background: #ffffff;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      padding: 7px 9px;
+      font-size: 0.83rem;
+      line-height: 1.4;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
     }
-    .ai-card-footer { display:flex; justify-content:flex-end;}
+
+    .ai-card-footer {
+      display: flex;
+      justify-content: flex-end;
+    }
 
     .badge-novas-mensagens {
       margin-bottom: 6px;
       padding: 6px 8px;
       border-radius: 10px;
-      background: rgba(0, 164, 154, 0.09);   /* usa o verde da paleta */
+      background: rgba(0, 164, 154, 0.09);
       border: 1px solid rgba(0, 164, 154, 0.4);
       font-size: 0.78rem;
-      color: var(--accent-blue);             /* texto em azul */
+      color: var(--accent-blue);
       display: flex;
       align-items: center;
       gap: 4px;
     }
-
-
-    footer { text-align:center; padding:6px 12px 14px; font-size:0.7rem; color:var(--text-muted);}
   </style>
 </head>
 <body>
   <div class="page">
     <header>
       <div class="brand-header">
+        <!-- ajuste o src para o nome correto da sua imagem -->
+        <img src="logoPHDTech.png" alt="PHD Tech" class="logo-phd" />
       </div>
       <h1>Mensagens de Reconhecimento PHD 🎉👏</h1>
       <p>Veja a mensagem que deixaram para você e envie reconhecimento para outras pessoas.</p>
     </header>
-
 
     <main>
       <div class="shell">
@@ -421,6 +606,7 @@
           <span>Desenvolvido por</span>
           <strong>PHD Tech</strong>
         </div>
+        <!-- ajuste o src para o nome correto da sua imagem -->
         <img
           src="logoGerenciaV4.png"
           alt="GerêncIA"
@@ -501,40 +687,36 @@
     }
 
     function renderizarResultadoConsulta(container, registros, qtdNovas = 0) {
-      container.innerHTML = "";
-    
+      container.innerHTML = '';
+
       const nome = registros[0].nome;
       const headerText =
         registros.length === 1
           ? `Olá, ${nome}! Encontramos 1 mensagem para você.`
           : `Olá, ${nome}! Encontramos ${registros.length} mensagens para você.`;
-    
-      const saudacao = criarElemento("div", "result-header", headerText);
+
+      const saudacao = criarElemento('div', 'result-header', headerText);
       container.appendChild(saudacao);
-    
-      // --- NOVO: aviso de novas mensagens ---
+
       if (qtdNovas > 0) {
         const aviso = criarElemento(
-          "div",
-          "badge-novas-mensagens",
+          'div',
+          'badge-novas-mensagens',
           qtdNovas === 1
-            ? "🔔 Você tem 1 nova mensagem desde sua última visita."
+            ? '🔔 Você tem 1 nova mensagem desde sua última visita.'
             : `🔔 Você tem ${qtdNovas} novas mensagens desde sua última visita.`
         );
         container.appendChild(aviso);
       }
-    
-      const detalheWrapper = criarElemento("div", "mensagem-detalhe-wrapper");
+
+      const detalheWrapper = criarElemento('div', 'mensagem-detalhe-wrapper');
       container.appendChild(detalheWrapper);
-
-    }
-
 
       if (registros.length > 1) {
         const listaRem = criarElemento('div', 'remetentes-list');
         registros.forEach((registro, index) => {
           const label = registro.autor || `Remetente ${index + 1}`;
-          const btn = criarElemento('button','btn btn-secondary btn-remetente', label);
+          const btn = criarElemento('button', 'btn btn-secondary btn-remetente', label);
           btn.type = 'button';
           btn.addEventListener('click', () => {
             atualizarMensagemDetalhe(detalheWrapper, registro);
@@ -543,7 +725,11 @@
         });
         container.appendChild(listaRem);
 
-        const info = criarElemento('div','status-text','Toque no remetente para ver a mensagem.');
+        const info = criarElemento(
+          'div',
+          'status-text',
+          'Toque no remetente para ver a mensagem.'
+        );
         container.appendChild(info);
       }
 
@@ -577,44 +763,43 @@
 
       carregarDestinatarios(destinatarioSelect);
 
-      formConsulta.addEventListener("submit", async (event) => {
+      formConsulta.addEventListener('submit', async (event) => {
         event.preventDefault();
-      
-        consultaErro.style.display = "none";
-        consultaResultado.style.display = "none";
-        consultaResultado.innerHTML = "";
-        consultaStatus.textContent = "";
-      
+
+        consultaErro.style.display = 'none';
+        consultaResultado.style.display = 'none';
+        consultaResultado.innerHTML = '';
+        consultaStatus.textContent = '';
+
         const nome = nomeConsultaInput.value;
         const cpf = cpfConsultaInput.value;
-      
+
         if (!nome || !cpf) {
-          consultaErro.textContent = "Preencha nome e CPF para buscar sua mensagem.";
-          consultaErro.style.display = "block";
+          consultaErro.textContent = 'Preencha nome e CPF para buscar sua mensagem.';
+          consultaErro.style.display = 'block';
           return;
         }
-      
+
         btnBuscar.disabled = true;
-        consultaStatus.textContent = "Buscando...";
-      
+        consultaStatus.textContent = 'Buscando...';
+
         try {
           const mensagensEncontradas = await buscarMensagensPorNomeECpf(nome, cpf);
-      
-          consultaStatus.textContent = "";
+
+          consultaStatus.textContent = '';
           btnBuscar.disabled = false;
-      
+
           if (!mensagensEncontradas.length) {
-            consultaErro.textContent = "Nenhuma mensagem encontrada. Confira nome e CPF.";
-            consultaErro.style.display = "block";
+            consultaErro.textContent = 'Nenhuma mensagem encontrada. Confira nome e CPF.';
+            consultaErro.style.display = 'block';
             return;
           }
-      
-          // --- NOVO: calcular quantas são "novas" desde a última visita ---
-          const cpfKey = cpf.replace(/\D/g, "");
+
+          const cpfKey = cpf.replace(/\D/g, '');
           const lastSeenKey = `ultima_visita_${cpfKey}`;
           const lastSeenStr = localStorage.getItem(lastSeenKey);
           const lastSeenDate = lastSeenStr ? new Date(lastSeenStr) : null;
-      
+
           let qtdNovas = 0;
           if (lastSeenDate) {
             qtdNovas = mensagensEncontradas.filter((msg) => {
@@ -622,39 +807,37 @@
               return new Date(msg.criado_em) > lastSeenDate;
             }).length;
           } else {
-            // se nunca vimos antes, considera tudo como "novo"
             qtdNovas = mensagensEncontradas.length;
           }
-      
-          // guarda agora como última visita
+
           localStorage.setItem(lastSeenKey, new Date().toISOString());
-      
+
           renderizarResultadoConsulta(
             consultaResultado,
             mensagensEncontradas,
             qtdNovas
           );
-          consultaResultado.style.display = "block";
-      
+          consultaResultado.style.display = 'block';
+
           if (!nomeRemetenteInput.value) {
             nomeRemetenteInput.value = nome;
           }
         } catch (err) {
           console.error(err);
-          consultaStatus.textContent = "";
+          consultaStatus.textContent = '';
           btnBuscar.disabled = false;
-          consultaErro.textContent = "Erro ao buscar mensagens. Tente novamente.";
-          consultaErro.style.display = "block";
+          consultaErro.textContent = 'Erro ao buscar mensagens. Tente novamente.';
+          consultaErro.style.display = 'block';
         }
       });
-
 
       btnIA.addEventListener('click', async () => {
         envioErro.style.display = 'none';
         envioSucesso.style.display = 'none';
 
         const nomeDestinatario = destinatarioSelect.value.trim();
-        const selectedOption = destinatarioSelect.options[destinatarioSelect.selectedIndex] || {};
+        const selectedOption =
+          destinatarioSelect.options[destinatarioSelect.selectedIndex] || {};
         const cpfDestinatario = selectedOption.dataset?.cpf || '';
         const nomeRemetente = nomeRemetenteInput.value.trim();
         const tom = tomMensagemSelect.value || '';
@@ -666,7 +849,7 @@
         }
 
         btnIA.disabled = true;
-        btnIA.setAttribute('aria-busy','true');
+        btnIA.setAttribute('aria-busy', 'true');
         const textoOriginal = btnIA.textContent;
         btnIA.textContent = 'Gerando...';
 
@@ -680,10 +863,10 @@
 
           aiSuggestionsList.innerHTML = '';
           sugestoes.forEach((texto) => {
-            const card = criarElemento('div','ai-card');
-            const mensagem = criarElemento('div',null,texto);
-            const footer = criarElemento('div','ai-card-footer');
-            const btnUsar = criarElemento('button','btn btn-secondary','Usar');
+            const card = criarElemento('div', 'ai-card');
+            const mensagem = criarElemento('div', null, texto);
+            const footer = criarElemento('div', 'ai-card-footer');
+            const btnUsar = criarElemento('button', 'btn btn-secondary', 'Usar');
             btnUsar.type = 'button';
             btnUsar.style.fontSize = '0.76rem';
             btnUsar.addEventListener('click', () => {
@@ -702,7 +885,7 @@
           envioErro.style.display = 'block';
         } finally {
           btnIA.disabled = false;
-          btnIA.setAttribute('aria-busy','false');
+          btnIA.setAttribute('aria-busy', 'false');
           btnIA.textContent = textoOriginal;
         }
       });
@@ -714,14 +897,16 @@
         envioSucesso.style.display = 'none';
 
         const nomeDestinatario = destinatarioSelect.value.trim();
-        const selectedOption = destinatarioSelect.options[destinatarioSelect.selectedIndex] || {};
+        const selectedOption =
+          destinatarioSelect.options[destinatarioSelect.selectedIndex] || {};
         const cpfDestinatario = selectedOption.dataset?.cpf || '';
         const nomeRemetente = nomeRemetenteInput.value.trim();
         const tom = tomMensagemSelect.value || '';
         const textoMensagem = textoMensagemTextarea.value.trim();
 
         if (!nomeDestinatario || !cpfDestinatario || !textoMensagem) {
-          envioErro.textContent = 'Selecione o destinatário, CPF (da planilha) e escreva a mensagem.';
+          envioErro.textContent =
+            'Selecione o destinatário, CPF (da planilha) e escreva a mensagem.';
           envioErro.style.display = 'block';
           return;
         }
