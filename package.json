@@ -1,0 +1,11 @@
+{
+  "name": "mensagens-reconhecimento",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "vercel-build": "echo \"no build step\""
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.0"
+  }
+}

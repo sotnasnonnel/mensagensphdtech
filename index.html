@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mensagens de Reconhecimento</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #f3f4f6;
+      --bg-card: #ffffff;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-soft: #dbeafe;
+      --border-soft: #e5e7eb;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --danger: #b91c1c;
+      --success: #047857;
+      --radius-lg: 12px;
+      --radius-xl: 18px;
+      --shadow-soft: 0 14px 30px rgba(15, 23, 42, 0.12);
+      --transition-fast: 0.18s ease-out;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background: radial-gradient(circle at top,#e5edff 0,#f9fafb 55%);
+      color: var(--text-main);
+    }
+
+    .page { min-height: 100vh; display:flex; flex-direction:column; }
+
+    header { padding:20px 16px 10px; text-align:center; }
+    header h1 { margin:0 0 6px; font-size:1.4rem; font-weight:700; letter-spacing:-0.02em;}
+    header p { margin:0; color:var(--text-muted); font-size:0.9rem;}
+
+    main { flex:1; padding:8px 10px 24px; }
+    .shell { max-width:640px; margin:0 auto; }
+    .stack { display:flex; flex-direction:column; gap:14px; }
+
+    .card {
+      background:var(--bg-card);
+      border-radius:var(--radius-xl);
+      border:1px solid rgba(148,163,184,0.18);
+      box-shadow:var(--shadow-soft);
+      padding:16px 14px 18px;
+      position:relative;
+      overflow:hidden;
+    }
+    .card::before {
+      content:""; position:absolute; inset:0;
+      background:radial-gradient(circle at top left,rgba(59,130,246,0.09) 0,transparent 55%);
+      opacity:0.85; pointer-events:none;
+    }
+    .card-inner { position:relative; z-index:1; }
+
+    .card-header { display:flex; align-items:center; gap:8px; margin-bottom:10px;}
+    .card-header-icon {
+      width:32px; height:32px; border-radius:999px;
+      background:var(--primary-soft); display:flex; align-items:center; justify-content:center;
+      font-size:1rem;
+    }
+    .card-header-title { font-size:1rem; font-weight:600; }
+    .card-header-subtitle { font-size:0.75rem; color:var(--text-muted); }
+
+    .fields { display:flex; flex-direction:column; gap:8px; margin-bottom:10px;}
+    .field-group { display:flex; flex-direction:column; gap:3px;}
+    .field-group label { font-size:0.8rem; font-weight:500; color:#374151;}
+    .field-group small { font-size:0.72rem; color:var(--text-muted); }
+
+    input[type="text"], textarea, select {
+      border-radius:10px; border:1px solid var(--border-soft);
+      padding:9px 10px; font-size:0.9rem; outline:none;
+      transition:border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
+      background:#f9fafb; -webkit-tap-highlight-color:transparent;
+    }
+    textarea { resize:vertical; min-height:100px; }
+
+    input:focus, textarea:focus, select:focus {
+      border-color:var(--primary);
+      box-shadow:0 0 0 1px rgba(37,99,235,0.25);
+      background:#ffffff;
+    }
+
+    .actions { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:6px;}
+    .btn {
+      appearance:none; border-radius:999px; border:none;
+      padding:9px 14px; font-size:0.9rem; font-weight:500;
+      cursor:pointer; display:inline-flex; align-items:center; gap:6px;
+      transition:background-color var(--transition-fast), box-shadow var(--transition-fast), transform 0.07s ease-out, opacity var(--transition-fast);
+      white-space:nowrap; -webkit-tap-highlight-color:transparent;
+    }
+    .btn-primary { background:var(--primary); color:#ffffff; box-shadow:0 10px 20px rgba(37,99,235,0.4);}
+    .btn-primary:hover { background:var(--primary-dark); transform:translateY(-1px);}
+    .btn-secondary { background:#e5e7eb; color:#111827;}
+    .btn-secondary:hover { background:#d1d5db;}
+    .btn-ghost { background:transparent; color:var(--text-muted); padding-inline:10px;}
+    .btn:disabled { opacity:0.6; cursor:default; transform:none; box-shadow:none;}
+    .btn-icon { font-size:1rem; }
+
+    .status-text { font-size:0.78rem; color:var(--text-muted);}
+    .error-text { color:var(--danger); font-size:0.78rem; margin-top:3px;}
+    .success-text { color:var(--success); font-size:0.8rem; margin-top:4px;}
+
+    .result-container {
+      margin-top:8px; border-radius:var(--radius-lg);
+      border:1px dashed rgba(148,163,184,0.75);
+      padding:9px 10px; background:#f9fafb;
+    }
+    .result-header { font-size:0.85rem; margin-bottom:4px; font-weight:500;}
+
+    .message-bubble {
+      position:relative; border-radius:14px;
+      background:#ffffff; border:1px solid #e5e7eb;
+      padding:8px 10px 7px; margin-bottom:3px;
+      font-size:0.9rem; line-height:1.4;
+    }
+    .message-bubble::before {
+      content:"“"; position:absolute; left:8px; top:-14px;
+      font-size:22px; color:rgba(148,163,184,0.9);
+    }
+    .message-author { font-size:0.78rem; text-align:right; color:var(--text-muted); font-style:italic;}
+
+    .remetentes-list { display:flex; flex-wrap:wrap; gap:6px; margin:6px 0 4px;}
+    .btn-remetente { font-size:0.78rem; padding:6px 10px;}
+
+    .ai-suggestions-container {
+      margin-top:8px; border-radius:var(--radius-lg);
+      border:1px dashed rgba(59,130,246,0.4);
+      padding:9px 10px; background:#eff6ff;
+    }
+    .ai-suggestions-header { display:flex; justify-content:space-between; align-items:center; gap:6px; margin-bottom:4px;}
+    .ai-suggestions-header span { font-size:0.82rem; font-weight:500;}
+    .ai-badge {
+      font-size:0.7rem; text-transform:uppercase; letter-spacing:0.06em;
+      background:rgba(37,99,235,0.08); padding:2px 6px; border-radius:999px; color:#1d4ed8;
+    }
+    .ai-suggestions-list { display:flex; flex-direction:column; gap:5px; max-height:210px; overflow-y:auto; -webkit-overflow-scrolling:touch;}
+    .ai-card {
+      border-radius:9px; background:#ffffff;
+      border:1px solid rgba(148,163,184,0.6);
+      padding:7px 9px; font-size:0.83rem; line-height:1.4;
+      display:flex; flex-direction:column; gap:6px;
+    }
+    .ai-card-footer { display:flex; justify-content:flex-end;}
+
+    footer { text-align:center; padding:6px 12px 14px; font-size:0.7rem; color:var(--text-muted);}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <h1>Mensagens de Reconhecimento</h1>
+      <p>Veja a mensagem que deixaram para você e envie reconhecimento para outras pessoas.</p>
+    </header>
+
+    <main>
+      <div class="shell">
+        <div class="stack">
+
+          <!-- Consulta -->
+          <section class="card" aria-labelledby="consulta-title">
+            <div class="card-inner">
+              <div class="card-header">
+                <div class="card-header-icon" aria-hidden="true">💬</div>
+                <div>
+                  <div id="consulta-title" class="card-header-title">Consultar sua mensagem</div>
+                  <div class="card-header-subtitle">
+                    Digite seu nome e CPF exatamente como na planilha.
+                  </div>
+                </div>
+              </div>
+
+              <form id="form-consulta" novalidate>
+                <div class="fields">
+                  <div class="field-group">
+                    <label for="nome-consulta">Nome</label>
+                    <input type="text" id="nome-consulta" autocomplete="name" placeholder="Seu nome completo" />
+                  </div>
+
+                  <div class="field-group">
+                    <label for="cpf-consulta">CPF</label>
+                    <input type="text" id="cpf-consulta" inputmode="numeric" placeholder="00000000000 ou 000.000.000-00" />
+                    <small>Usado somente para localizar sua mensagem na planilha.</small>
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <button type="submit" class="btn btn-primary" id="btn-buscar">
+                    <span class="btn-icon">🔍</span> Buscar mensagem
+                  </button>
+                  <span id="consulta-status" class="status-text"></span>
+                </div>
+                <div id="consulta-erro" class="error-text" role="alert" style="display:none;"></div>
+              </form>
+
+              <div id="consulta-resultado" class="result-container" style="display:none;" aria-live="polite"></div>
+            </div>
+          </section>
+
+          <!-- Envio -->
+          <section class="card" aria-labelledby="envio-title">
+            <div class="card-inner">
+              <div class="card-header">
+                <div class="card-header-icon" aria-hidden="true">✨</div>
+                <div>
+                  <div id="envio-title" class="card-header-title">Enviar mensagem para outra pessoa</div>
+                  <div class="card-header-subtitle">
+                    Selecione o nome a partir da planilha e use IA para se inspirar.
+                  </div>
+                </div>
+              </div>
+
+              <form id="form-envio" novalidate>
+                <div id="envio-form-body">
+                  <div class="fields">
+                    <div class="field-group">
+                      <label for="destinatario-select">Nome do destinatário</label>
+                      <select id="destinatario-select">
+                        <option value="">Carregando nomes...</option>
+                      </select>
+                      <small>Nomes carregados da tabela no Supabase.</small>
+                    </div>
+
+                    <div class="field-group">
+                      <label for="nome-remetente">Seu nome (remetente)</label>
+                      <input type="text" id="nome-remetente" placeholder="Seu nome" />
+                    </div>
+
+                    <div class="field-group">
+                      <label for="tom-mensagem">Tom da mensagem (opcional)</label>
+                      <select id="tom-mensagem">
+                        <option value="">Selecione...</option>
+                        <option value="reconhecimento">Reconhecimento</option>
+                        <option value="agradecimento">Agradecimento</option>
+                        <option value="feedback">Feedback construtivo</option>
+                        <option value="parabens">Parabéns por resultado</option>
+                      </select>
+                    </div>
+
+                    <div class="field-group">
+                      <label for="texto-mensagem">Mensagem</label>
+                      <textarea id="texto-mensagem" placeholder="Escreva aqui a mensagem que deseja enviar"></textarea>
+                    </div>
+                  </div>
+
+                  <div class="actions">
+                    <button type="button" class="btn btn-secondary" id="btn-ia" aria-busy="false">
+                      <span class="btn-icon">🤖</span> Sugerir com IA
+                    </button>
+                    <button type="button" class="btn btn-ghost" id="btn-limpar">Limpar</button>
+                  </div>
+
+                  <div id="envio-erro" class="error-text" role="alert" style="display:none;"></div>
+
+                  <div id="ai-suggestions" class="ai-suggestions-container" style="display:none;">
+                    <div class="ai-suggestions-header">
+                      <span>Sugestões de mensagem (IA)</span>
+                      <span class="ai-badge">DeepSeek</span>
+                    </div>
+                    <div class="ai-suggestions-list" id="ai-suggestions-list"></div>
+                  </div>
+
+                  <div class="actions" style="margin-top:10px;">
+                    <button type="submit" class="btn btn-primary" id="btn-enviar">
+                      <span class="btn-icon">📨</span> Enviar mensagem
+                    </button>
+                  </div>
+                </div>
+
+                <div id="envio-sucesso" class="success-text" role="status" style="display:none;"></div>
+                <div class="actions" id="envio-possucesso" style="display:none; margin-top:10px;">
+                  <button type="button" class="btn btn-primary" id="btn-nova-mensagem">
+                    Enviar outra mensagem
+                  </button>
+                </div>
+              </form>
+            </div>
+          </section>
+
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      Interface demonstrativa · Backend na Vercel com Supabase e DeepSeek.
+    </footer>
+  </div>
+
+  <script>
+    function criarElemento(tag, className, texto) {
+      const el = document.createElement(tag);
+      if (className) el.className = className;
+      if (texto !== undefined) el.textContent = texto;
+      return el;
+    }
+
+    async function buscarMensagensPorNomeECpf(nome, cpf) {
+      const params = new URLSearchParams({ nome, cpf });
+      const res = await fetch('/api/mensagens?' + params.toString());
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error || 'Erro ao buscar mensagens');
+      return data.mensagens || [];
+    }
+
+    async function carregarDestinatarios(selectEl) {
+      selectEl.innerHTML = '<option value="">Carregando nomes...</option>';
+      try {
+        const res = await fetch('/api/mensagens?mode=destinatarios');
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || 'Erro ao carregar destinatários');
+
+        const destinatarios = data.destinatarios || [];
+        selectEl.innerHTML = '<option value="">Selecione um nome...</option>';
+        destinatarios.forEach((d) => {
+          const opt = document.createElement('option');
+          opt.value = d.nome;
+          opt.textContent = d.nome;
+          if (d.cpf) opt.dataset.cpf = d.cpf;
+          selectEl.appendChild(opt);
+        });
+
+      } catch (err) {
+        console.error(err);
+        selectEl.innerHTML = '<option value="">Erro ao carregar nomes</option>';
+      }
+    }
+
+    async function enviarMensagem(payload) {
+      const res = await fetch('/api/mensagens', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error || 'Erro ao enviar mensagem');
+      return data.registro;
+    }
+
+    async function fetchAiSuggestions(payload) {
+      const res = await fetch('/api/sugestoes-ia', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error || 'Erro na IA');
+      return data.sugestoes || [];
+    }
+
+    function atualizarMensagemDetalhe(wrapper, registro) {
+      wrapper.innerHTML = '';
+      const mensagemBubble = criarElemento('div', 'message-bubble', registro.mensagem);
+      const autor = criarElemento('div', 'message-author', '— ' + registro.autor);
+      wrapper.appendChild(mensagemBubble);
+      wrapper.appendChild(autor);
+    }
+
+    function renderizarResultadoConsulta(container, registros) {
+      container.innerHTML = '';
+      const nome = registros[0].nome;
+      const headerText =
+        registros.length === 1
+          ? `Olá, ${nome}! Encontramos 1 mensagem para você.`
+          : `Olá, ${nome}! Encontramos ${registros.length} mensagens para você.`;
+
+      const saudacao = criarElemento('div', 'result-header', headerText);
+      container.appendChild(saudacao);
+
+      const detalheWrapper = criarElemento('div', 'mensagem-detalhe-wrapper');
+      container.appendChild(detalheWrapper);
+
+      if (registros.length > 1) {
+        const listaRem = criarElemento('div', 'remetentes-list');
+        registros.forEach((registro, index) => {
+          const label = registro.autor || `Remetente ${index + 1}`;
+          const btn = criarElemento('button','btn btn-secondary btn-remetente', label);
+          btn.type = 'button';
+          btn.addEventListener('click', () => {
+            atualizarMensagemDetalhe(detalheWrapper, registro);
+          });
+          listaRem.appendChild(btn);
+        });
+        container.appendChild(listaRem);
+
+        const info = criarElemento('div','status-text','Toque no remetente para ver a mensagem.');
+        container.appendChild(info);
+      }
+
+      atualizarMensagemDetalhe(detalheWrapper, registros[0]);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const formConsulta = document.getElementById('form-consulta');
+      const nomeConsultaInput = document.getElementById('nome-consulta');
+      const cpfConsultaInput = document.getElementById('cpf-consulta');
+      const btnBuscar = document.getElementById('btn-buscar');
+      const consultaStatus = document.getElementById('consulta-status');
+      const consultaErro = document.getElementById('consulta-erro');
+      const consultaResultado = document.getElementById('consulta-resultado');
+
+      const formEnvio = document.getElementById('form-envio');
+      const envioFormBody = document.getElementById('envio-form-body');
+      const destinatarioSelect = document.getElementById('destinatario-select');
+      const nomeRemetenteInput = document.getElementById('nome-remetente');
+      const tomMensagemSelect = document.getElementById('tom-mensagem');
+      const textoMensagemTextarea = document.getElementById('texto-mensagem');
+      const btnIA = document.getElementById('btn-ia');
+      const btnLimpar = document.getElementById('btn-limpar');
+      const btnEnviar = document.getElementById('btn-enviar');
+      const envioErro = document.getElementById('envio-erro');
+      const envioSucesso = document.getElementById('envio-sucesso');
+      const envioPosSucesso = document.getElementById('envio-possucesso');
+      const btnNovaMensagem = document.getElementById('btn-nova-mensagem');
+      const aiSuggestionsContainer = document.getElementById('ai-suggestions');
+      const aiSuggestionsList = document.getElementById('ai-suggestions-list');
+
+      carregarDestinatarios(destinatarioSelect);
+
+      formConsulta.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        consultaErro.style.display = 'none';
+        consultaResultado.style.display = 'none';
+        consultaResultado.innerHTML = '';
+        consultaStatus.textContent = '';
+
+        const nome = nomeConsultaInput.value;
+        const cpf = cpfConsultaInput.value;
+
+        if (!nome || !cpf) {
+          consultaErro.textContent = 'Preencha nome e CPF para buscar sua mensagem.';
+          consultaErro.style.display = 'block';
+          return;
+        }
+
+        btnBuscar.disabled = true;
+        consultaStatus.textContent = 'Buscando...';
+
+        try {
+          const mensagensEncontradas = await buscarMensagensPorNomeECpf(nome, cpf);
+
+          consultaStatus.textContent = '';
+          btnBuscar.disabled = false;
+
+          if (!mensagensEncontradas.length) {
+            consultaErro.textContent = 'Nenhuma mensagem encontrada. Confira nome e CPF.';
+            consultaErro.style.display = 'block';
+            return;
+          }
+
+          renderizarResultadoConsulta(consultaResultado, mensagensEncontradas);
+          consultaResultado.style.display = 'block';
+
+          if (!nomeRemetenteInput.value) {
+            nomeRemetenteInput.value = nome;
+          }
+        } catch (err) {
+          console.error(err);
+          consultaStatus.textContent = '';
+          btnBuscar.disabled = false;
+          consultaErro.textContent = 'Erro ao buscar mensagens. Tente novamente.';
+          consultaErro.style.display = 'block';
+        }
+      });
+
+      btnIA.addEventListener('click', async () => {
+        envioErro.style.display = 'none';
+        envioSucesso.style.display = 'none';
+
+        const nomeDestinatario = destinatarioSelect.value.trim();
+        const selectedOption = destinatarioSelect.options[destinatarioSelect.selectedIndex] || {};
+        const cpfDestinatario = selectedOption.dataset?.cpf || '';
+        const nomeRemetente = nomeRemetenteInput.value.trim();
+        const tom = tomMensagemSelect.value || '';
+
+        if (!nomeDestinatario) {
+          envioErro.textContent = 'Selecione um destinatário para gerar sugestões.';
+          envioErro.style.display = 'block';
+          return;
+        }
+
+        btnIA.disabled = true;
+        btnIA.setAttribute('aria-busy','true');
+        const textoOriginal = btnIA.textContent;
+        btnIA.textContent = 'Gerando...';
+
+        try {
+          const sugestoes = await fetchAiSuggestions({
+            nomeDestinatario,
+            cpfDestinatario,
+            nomeRemetente,
+            tom
+          });
+
+          aiSuggestionsList.innerHTML = '';
+          sugestoes.forEach((texto) => {
+            const card = criarElemento('div','ai-card');
+            const mensagem = criarElemento('div',null,texto);
+            const footer = criarElemento('div','ai-card-footer');
+            const btnUsar = criarElemento('button','btn btn-secondary','Usar');
+            btnUsar.type = 'button';
+            btnUsar.style.fontSize = '0.76rem';
+            btnUsar.addEventListener('click', () => {
+              textoMensagemTextarea.value = texto;
+              textoMensagemTextarea.focus();
+            });
+            footer.appendChild(btnUsar);
+            card.appendChild(mensagem);
+            card.appendChild(footer);
+            aiSuggestionsList.appendChild(card);
+          });
+          aiSuggestionsContainer.style.display = 'block';
+        } catch (err) {
+          console.error(err);
+          envioErro.textContent = 'Erro ao obter sugestões da IA.';
+          envioErro.style.display = 'block';
+        } finally {
+          btnIA.disabled = false;
+          btnIA.setAttribute('aria-busy','false');
+          btnIA.textContent = textoOriginal;
+        }
+      });
+
+      formEnvio.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        envioErro.style.display = 'none';
+        envioSucesso.style.display = 'none';
+
+        const nomeDestinatario = destinatarioSelect.value.trim();
+        const selectedOption = destinatarioSelect.options[destinatarioSelect.selectedIndex] || {};
+        const cpfDestinatario = selectedOption.dataset?.cpf || '';
+        const nomeRemetente = nomeRemetenteInput.value.trim();
+        const tom = tomMensagemSelect.value || '';
+        const textoMensagem = textoMensagemTextarea.value.trim();
+
+        if (!nomeDestinatario || !cpfDestinatario || !textoMensagem) {
+          envioErro.textContent = 'Selecione o destinatário, CPF (da planilha) e escreva a mensagem.';
+          envioErro.style.display = 'block';
+          return;
+        }
+
+        btnEnviar.disabled = true;
+        const textoOriginal = btnEnviar.textContent;
+        btnEnviar.textContent = 'Enviando...';
+
+        try {
+          const payload = {
+            nomeDestinatario,
+            cpfDestinatario,
+            nomeRemetente,
+            tom,
+            mensagem: textoMensagem,
+            enviadoEm: new Date().toISOString()
+          };
+
+          await enviarMensagem(payload);
+
+          envioSucesso.textContent = 'Mensagem enviada com sucesso!';
+          envioSucesso.style.display = 'block';
+
+          envioFormBody.style.display = 'none';
+          envioPosSucesso.style.display = 'flex';
+        } catch (err) {
+          console.error(err);
+          envioErro.textContent = 'Erro ao enviar mensagem. Tente novamente.';
+          envioErro.style.display = 'block';
+        } finally {
+          btnEnviar.disabled = false;
+          btnEnviar.textContent = textoOriginal;
+        }
+      });
+
+      btnNovaMensagem.addEventListener('click', () => {
+        destinatarioSelect.value = '';
+        tomMensagemSelect.value = '';
+        textoMensagemTextarea.value = '';
+        envioErro.style.display = 'none';
+        envioSucesso.style.display = 'none';
+        aiSuggestionsContainer.style.display = 'none';
+        aiSuggestionsList.innerHTML = '';
+
+        envioFormBody.style.display = 'block';
+        envioPosSucesso.style.display = 'none';
+      });
+
+      btnLimpar.addEventListener('click', () => {
+        destinatarioSelect.value = '';
+        tomMensagemSelect.value = '';
+        textoMensagemTextarea.value = '';
+        envioErro.style.display = 'none';
+        envioSucesso.style.display = 'none';
+        aiSuggestionsContainer.style.display = 'none';
+        aiSuggestionsList.innerHTML = '';
+      });
+    });
+  </script>
+</body>
+</html>
