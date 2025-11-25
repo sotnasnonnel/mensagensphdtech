@@ -260,6 +260,20 @@
     }
     .ai-card-footer { display:flex; justify-content:flex-end;}
 
+    .badge-novas-mensagens {
+      margin-bottom: 6px;
+      padding: 6px 8px;
+      border-radius: 10px;
+      background: rgba(0, 164, 154, 0.09);   /* usa o verde da paleta */
+      border: 1px solid rgba(0, 164, 154, 0.4);
+      font-size: 0.78rem;
+      color: var(--accent-blue);             /* texto em azul */
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+
     footer { text-align:center; padding:6px 12px 14px; font-size:0.7rem; color:var(--text-muted);}
   </style>
 </head>
@@ -486,19 +500,35 @@
       wrapper.appendChild(autor);
     }
 
-    function renderizarResultadoConsulta(container, registros) {
-      container.innerHTML = '';
+    function renderizarResultadoConsulta(container, registros, qtdNovas = 0) {
+      container.innerHTML = "";
+    
       const nome = registros[0].nome;
       const headerText =
         registros.length === 1
           ? `Olá, ${nome}! Encontramos 1 mensagem para você.`
           : `Olá, ${nome}! Encontramos ${registros.length} mensagens para você.`;
-
-      const saudacao = criarElemento('div', 'result-header', headerText);
+    
+      const saudacao = criarElemento("div", "result-header", headerText);
       container.appendChild(saudacao);
-
-      const detalheWrapper = criarElemento('div', 'mensagem-detalhe-wrapper');
+    
+      // --- NOVO: aviso de novas mensagens ---
+      if (qtdNovas > 0) {
+        const aviso = criarElemento(
+          "div",
+          "badge-novas-mensagens",
+          qtdNovas === 1
+            ? "🔔 Você tem 1 nova mensagem desde sua última visita."
+            : `🔔 Você tem ${qtdNovas} novas mensagens desde sua última visita.`
+        );
+        container.appendChild(aviso);
+      }
+    
+      const detalheWrapper = criarElemento("div", "mensagem-detalhe-wrapper");
       container.appendChild(detalheWrapper);
+
+    }
+
 
       if (registros.length > 1) {
         const listaRem = criarElemento('div', 'remetentes-list');
@@ -547,51 +577,77 @@
 
       carregarDestinatarios(destinatarioSelect);
 
-      formConsulta.addEventListener('submit', async (event) => {
+      formConsulta.addEventListener("submit", async (event) => {
         event.preventDefault();
-        consultaErro.style.display = 'none';
-        consultaResultado.style.display = 'none';
-        consultaResultado.innerHTML = '';
-        consultaStatus.textContent = '';
-
+      
+        consultaErro.style.display = "none";
+        consultaResultado.style.display = "none";
+        consultaResultado.innerHTML = "";
+        consultaStatus.textContent = "";
+      
         const nome = nomeConsultaInput.value;
         const cpf = cpfConsultaInput.value;
-
+      
         if (!nome || !cpf) {
-          consultaErro.textContent = 'Preencha nome e CPF para buscar sua mensagem.';
-          consultaErro.style.display = 'block';
+          consultaErro.textContent = "Preencha nome e CPF para buscar sua mensagem.";
+          consultaErro.style.display = "block";
           return;
         }
-
+      
         btnBuscar.disabled = true;
-        consultaStatus.textContent = 'Buscando...';
-
+        consultaStatus.textContent = "Buscando...";
+      
         try {
           const mensagensEncontradas = await buscarMensagensPorNomeECpf(nome, cpf);
-
-          consultaStatus.textContent = '';
+      
+          consultaStatus.textContent = "";
           btnBuscar.disabled = false;
-
+      
           if (!mensagensEncontradas.length) {
-            consultaErro.textContent = 'Nenhuma mensagem encontrada. Confira nome e CPF.';
-            consultaErro.style.display = 'block';
+            consultaErro.textContent = "Nenhuma mensagem encontrada. Confira nome e CPF.";
+            consultaErro.style.display = "block";
             return;
           }
-
-          renderizarResultadoConsulta(consultaResultado, mensagensEncontradas);
-          consultaResultado.style.display = 'block';
-
+      
+          // --- NOVO: calcular quantas são "novas" desde a última visita ---
+          const cpfKey = cpf.replace(/\D/g, "");
+          const lastSeenKey = `ultima_visita_${cpfKey}`;
+          const lastSeenStr = localStorage.getItem(lastSeenKey);
+          const lastSeenDate = lastSeenStr ? new Date(lastSeenStr) : null;
+      
+          let qtdNovas = 0;
+          if (lastSeenDate) {
+            qtdNovas = mensagensEncontradas.filter((msg) => {
+              if (!msg.criado_em) return false;
+              return new Date(msg.criado_em) > lastSeenDate;
+            }).length;
+          } else {
+            // se nunca vimos antes, considera tudo como "novo"
+            qtdNovas = mensagensEncontradas.length;
+          }
+      
+          // guarda agora como última visita
+          localStorage.setItem(lastSeenKey, new Date().toISOString());
+      
+          renderizarResultadoConsulta(
+            consultaResultado,
+            mensagensEncontradas,
+            qtdNovas
+          );
+          consultaResultado.style.display = "block";
+      
           if (!nomeRemetenteInput.value) {
             nomeRemetenteInput.value = nome;
           }
         } catch (err) {
           console.error(err);
-          consultaStatus.textContent = '';
+          consultaStatus.textContent = "";
           btnBuscar.disabled = false;
-          consultaErro.textContent = 'Erro ao buscar mensagens. Tente novamente.';
-          consultaErro.style.display = 'block';
+          consultaErro.textContent = "Erro ao buscar mensagens. Tente novamente.";
+          consultaErro.style.display = "block";
         }
       });
+
 
       btnIA.addEventListener('click', async () => {
         envioErro.style.display = 'none';
