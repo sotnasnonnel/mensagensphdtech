@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <title>Mensagens de Reconhecimento</title>
+  <title>O resultado é você!</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
@@ -466,7 +466,7 @@
     <header>
       <div class="brand-header">
       </div>
-      <h1>Mensagens de Reconhecimento PHD 🎉👏</h1>
+      <h1>PHD Engenharia, o resultado é você! 🎉👏</h1>
       <p>Veja a mensagem que deixaram para você e envie reconhecimento para outras pessoas.</p>
     </header>
 
@@ -491,9 +491,10 @@
                 <div class="fields">
                   <div class="field-group">
                     <label for="nome-consulta">Nome</label>
-                    <input type="text" id="nome-consulta" autocomplete="name" placeholder="Seu nome completo" />
+                    <select id="nome-consulta">
+                      <option value="">Carregando nomes...</option>
+                    </select>
                   </div>
-
                   <div class="field-group">
                     <label for="cpf-consulta">CPF</label>
                     <input type="text" id="cpf-consulta" inputmode="numeric" placeholder="00000000000 ou 000.000.000-00" />
@@ -746,6 +747,7 @@
       const formEnvio = document.getElementById('form-envio');
       const envioFormBody = document.getElementById('envio-form-body');
       const destinatarioSelect = document.getElementById('destinatario-select');
+      const nomeConsultaInput = document.getElementById('nome-consulta');
       const nomeRemetenteInput = document.getElementById('nome-remetente');
       const tomMensagemSelect = document.getElementById('tom-mensagem');
       const textoMensagemTextarea = document.getElementById('texto-mensagem');
@@ -760,6 +762,7 @@
       const aiSuggestionsList = document.getElementById('ai-suggestions-list');
 
       carregarDestinatarios(destinatarioSelect);
+      carregarDestinatarios(nomeConsultaInput);
 
       formConsulta.addEventListener('submit', async (event) => {
         event.preventDefault();
