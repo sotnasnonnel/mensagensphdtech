@@ -491,6 +491,12 @@
                 <div class="fields">
                   <div class="field-group">
                     <label for="nome-consulta">Nome</label>
+                    <!-- caixa de busca do nome para consulta -->
+                    <input
+                      type="text"
+                      id="busca-nome-consulta"
+                      placeholder="Buscar nome..."
+                    />
                     <select id="nome-consulta">
                       <option value="">Carregando nomes...</option>
                     </select>
@@ -533,6 +539,12 @@
                   <div class="fields">
                     <div class="field-group">
                       <label for="destinatario-select">Nome do destinatário</label>
+                      <!-- caixa de busca do nome do destinatário -->
+                      <input
+                        type="text"
+                        id="busca-destinatario"
+                        placeholder="Buscar nome do destinatário..."
+                      />
                       <select id="destinatario-select">
                         <option value="">Carregando nomes...</option>
                       </select>
@@ -632,6 +644,15 @@
       return data.mensagens || [];
     }
 
+    // Ordena os destinatários alfabeticamente pelo nome
+    function ordenarDestinatarios(destinatarios) {
+      return destinatarios.sort((a, b) => {
+        const nomeA = (a.nome || '').trim();
+        const nomeB = (b.nome || '').trim();
+        return nomeA.localeCompare(nomeB, 'pt-BR', { sensitivity: 'base' });
+      });
+    }
+
     async function carregarDestinatarios(selectEl) {
       selectEl.innerHTML = '<option value="">Carregando nomes...</option>';
       try {
@@ -639,7 +660,9 @@
         const data = await res.json();
         if (!data.ok) throw new Error(data.error || 'Erro ao carregar destinatários');
 
-        const destinatarios = data.destinatarios || [];
+        let destinatarios = data.destinatarios || [];
+        destinatarios = ordenarDestinatarios(destinatarios);
+
         selectEl.innerHTML = '<option value="">Selecione um nome...</option>';
         destinatarios.forEach((d) => {
           const opt = document.createElement('option');
@@ -735,6 +758,32 @@
       atualizarMensagemDetalhe(detalheWrapper, registros[0]);
     }
 
+    // Normaliza string para busca (remove acentos e transforma em minúsculas)
+    function normalizarTextoBusca(texto) {
+      return texto
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase();
+    }
+
+    // Filtra as opções de um <select> com base no termo de busca
+    function filtrarOpcoesSelect(selectEl, termo) {
+      const termoNormalizado = normalizarTextoBusca(termo || '');
+
+      Array.from(selectEl.options).forEach((opt, index) => {
+        // Mantém sempre a primeira opção (placeholder)
+        if (index === 0) {
+          opt.hidden = false;
+          return;
+        }
+
+        const texto = opt.textContent || '';
+        const textoNormalizado = normalizarTextoBusca(texto);
+
+        opt.hidden = termoNormalizado && !textoNormalizado.includes(termoNormalizado);
+      });
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       const formConsulta = document.getElementById('form-consulta');
       const cpfConsultaInput = document.getElementById('cpf-consulta');
@@ -760,8 +809,22 @@
       const aiSuggestionsContainer = document.getElementById('ai-suggestions');
       const aiSuggestionsList = document.getElementById('ai-suggestions-list');
 
+      const buscaNomeConsultaInput = document.getElementById('busca-nome-consulta');
+      const buscaDestinatarioInput = document.getElementById('busca-destinatario');
+
+      // Carrega destinatários (já ordenados) em ambos os selects
       carregarDestinatarios(destinatarioSelect);
       carregarDestinatarios(nomeConsultaInput);
+
+      // Filtro de busca para o campo "Nome" (consulta)
+      buscaNomeConsultaInput.addEventListener('input', (e) => {
+        filtrarOpcoesSelect(nomeConsultaInput, e.target.value);
+      });
+
+      // Filtro de busca para o campo "Nome do destinatário"
+      buscaDestinatarioInput.addEventListener('input', (e) => {
+        filtrarOpcoesSelect(destinatarioSelect, e.target.value);
+      });
 
       formConsulta.addEventListener('submit', async (event) => {
         event.preventDefault();
@@ -963,6 +1026,8 @@
         envioSucesso.style.display = 'none';
         aiSuggestionsContainer.style.display = 'none';
         aiSuggestionsList.innerHTML = '';
+        buscaDestinatarioInput.value = '';
+        filtrarOpcoesSelect(destinatarioSelect, '');
       });
     });
   </script>
