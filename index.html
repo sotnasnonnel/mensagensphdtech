@@ -138,6 +138,23 @@
     .shell {
       max-width: 640px;
       margin: 0 auto;
+      animation: shellEnter 0.7s ease-out;
+      transform-origin: top center;
+    }
+
+    @keyframes shellEnter {
+      0% {
+        opacity: 0;
+        transform: translateY(18px) scale(0.98);
+      }
+      60% {
+        opacity: 1;
+        transform: translateY(0) scale(1.01);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
     }
 
     .stack {
@@ -460,14 +477,51 @@
       gap: 4px;
     }
 
-    /* Barra de busca começa escondida e aparece quando o select é focado/clicado */
-    .search-input {
-      display: none;
-      margin-bottom: 6px;
+    /* 🎊 Confete festivo */
+    .confetti-container {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 9999;
     }
 
-    .search-input.is-visible {
-      display: block;
+    .confetti-piece {
+      position: absolute;
+      top: -10px;
+      width: 8px;
+      height: 14px;
+      border-radius: 2px;
+      opacity: 0;
+      animation-name: confettiFall, confettiSwing;
+      animation-timing-function: linear, ease-in-out;
+      animation-iteration-count: 1, infinite;
+    }
+
+    @keyframes confettiFall {
+      0% {
+        transform: translate3d(0, -100%, 0) rotateZ(0deg);
+        opacity: 1;
+      }
+      80% {
+        opacity: 1;
+      }
+      100% {
+        transform: translate3d(0, 110vh, 0) rotateZ(360deg);
+        opacity: 0;
+      }
+    }
+
+    @keyframes confettiSwing {
+      0% {
+        transform: translateX(0);
+      }
+      50% {
+        transform: translateX(12px);
+      }
+      100% {
+        transform: translateX(-6px);
+      }
     }
   </style>
 </head>
@@ -501,11 +555,10 @@
                 <div class="fields">
                   <div class="field-group">
                     <label for="nome-consulta">Nome</label>
-                    <!-- barra de busca aparece apenas quando o select ganha foco/clique -->
+                    <!-- barra de busca sempre visível -->
                     <input
                       type="text"
                       id="busca-nome-consulta"
-                      class="search-input"
                       placeholder="Buscar nome..."
                     />
                     <select id="nome-consulta">
@@ -550,11 +603,10 @@
                   <div class="fields">
                     <div class="field-group">
                       <label for="destinatario-select">Nome do destinatário</label>
-                      <!-- barra de busca aparece apenas quando o select ganha foco/clique -->
+                      <!-- barra de busca sempre visível -->
                       <input
                         type="text"
                         id="busca-destinatario"
-                        class="search-input"
                         placeholder="Buscar nome do destinatário..."
                       />
                       <select id="destinatario-select">
@@ -629,7 +681,6 @@
           <span>Desenvolvido por</span>
           <strong>PHD Tech</strong>
         </div>
-        <!-- ajuste o src para o nome correto da sua imagem -->
         <img
           src="logoGerenciaV4.png"
           alt="GerêncIA"
@@ -796,11 +847,37 @@
       });
     }
 
-    // Mostra a barra de busca e foca nela quando o select é clicado/focado
-    function mostrarBarraBusca(inputEl) {
-      if (!inputEl) return;
-      inputEl.classList.add('is-visible');
-      setTimeout(() => inputEl.focus(), 10);
+    // 🎊 Confete festivo: usado na entrada e ao enviar mensagem
+    function dispararConfete() {
+      const container = document.createElement('div');
+      container.className = 'confetti-container';
+
+      const cores = [
+        'var(--primary)',
+        'var(--primary-soft)',
+        'var(--accent-blue)',
+        'var(--accent-green)',
+        '#facc15',
+        '#ec4899'
+      ];
+
+      const quantidade = 120;
+      for (let i = 0; i < quantidade; i++) {
+        const piece = document.createElement('span');
+        piece.className = 'confetti-piece';
+        piece.style.left = Math.random() * 100 + '%';
+        piece.style.animationDuration = 2.5 + Math.random() * 1.5 + 's';
+        piece.style.animationDelay = Math.random() * 1.2 + 's';
+        piece.style.backgroundColor = cores[Math.floor(Math.random() * cores.length)];
+        piece.style.transform = `scale(${0.8 + Math.random() * 0.7})`;
+        container.appendChild(piece);
+      }
+
+      document.body.appendChild(container);
+
+      setTimeout(() => {
+        container.remove();
+      }, 4500);
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -835,22 +912,22 @@
       carregarDestinatarios(destinatarioSelect);
       carregarDestinatarios(nomeConsultaInput);
 
-      // Ao clicar/focar no select de consulta, mostrar barra de busca de nome
+      // 🔍 Quando clicar/focar no select de consulta, joga foco para a barra de busca de nome
       nomeConsultaInput.addEventListener('focus', () => {
-        mostrarBarraBusca(buscaNomeConsultaInput);
+        buscaNomeConsultaInput.focus();
       });
 
       nomeConsultaInput.addEventListener('click', () => {
-        mostrarBarraBusca(buscaNomeConsultaInput);
+        buscaNomeConsultaInput.focus();
       });
 
-      // Ao clicar/focar no select de destinatário, mostrar barra de busca
+      // 🔍 Quando clicar/focar no select de destinatário, joga foco para a barra de busca de destinatário
       destinatarioSelect.addEventListener('focus', () => {
-        mostrarBarraBusca(buscaDestinatarioInput);
+        buscaDestinatarioInput.focus();
       });
 
       destinatarioSelect.addEventListener('click', () => {
-        mostrarBarraBusca(buscaDestinatarioInput);
+        buscaDestinatarioInput.focus();
       });
 
       // Filtro de busca para o campo "Nome" (consulta)
@@ -862,6 +939,9 @@
       buscaDestinatarioInput.addEventListener('input', (e) => {
         filtrarOpcoesSelect(destinatarioSelect, e.target.value);
       });
+
+      // 🎉 Confete de boas-vindas na entrada da página
+      setTimeout(dispararConfete, 500);
 
       formConsulta.addEventListener('submit', async (event) => {
         event.preventDefault();
@@ -1027,11 +1107,14 @@
 
           await enviarMensagem(payload);
 
-          envioSucesso.textContent = 'Mensagem enviada com sucesso!';
+          envioSucesso.textContent = 'Mensagem enviada com sucesso! 🎉';
           envioSucesso.style.display = 'block';
 
           envioFormBody.style.display = 'none';
           envioPosSucesso.style.display = 'flex';
+
+          // 🎊 Confete especial ao enviar mensagem para outra pessoa
+          dispararConfete();
         } catch (err) {
           console.error(err);
           envioErro.textContent = 'Erro ao enviar mensagem. Tente novamente.';
