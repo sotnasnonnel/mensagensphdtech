@@ -115,6 +115,22 @@
     header {
       padding: 20px 16px 10px;
       text-align: center;
+      animation: headerIntro 0.8s ease-out;
+    }
+
+    @keyframes headerIntro {
+      0% {
+        opacity: 0;
+        transform: translateY(-15px);
+      }
+      60% {
+        opacity: 1;
+        transform: translateY(3px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     header h1 {
@@ -138,6 +154,23 @@
     .shell {
       max-width: 640px;
       margin: 0 auto;
+      animation: shellEnter 0.7s ease-out 0.1s both;
+      transform-origin: top center;
+    }
+
+    @keyframes shellEnter {
+      0% {
+        opacity: 0;
+        transform: translateY(18px) scale(0.98);
+      }
+      60% {
+        opacity: 1;
+        transform: translateY(0) scale(1.01);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
     }
 
     .stack {
@@ -460,7 +493,7 @@
       gap: 4px;
     }
 
-    /* Combobox customizada para o campo Nome (consulta) */
+    /* Combobox customizada (consulta + destinatário) */
     .combo {
       position: relative;
     }
@@ -556,6 +589,100 @@
       color: var(--text-muted);
       padding: 4px 2px;
     }
+
+    /* ✨ Efeitos festivos criativos */
+    .confetti-container {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 9999;
+    }
+
+    .confetti-piece {
+      position: absolute;
+      top: -10px;
+      width: 8px;
+      height: 14px;
+      border-radius: 2px;
+      opacity: 0;
+      animation-name: confettiFall, confettiSwing;
+      animation-timing-function: linear, ease-in-out;
+      animation-iteration-count: 1, infinite;
+    }
+
+    @keyframes confettiFall {
+      0% {
+        transform: translate3d(0, -100%, 0) rotateZ(0deg);
+        opacity: 1;
+      }
+      80% {
+        opacity: 1;
+      }
+      100% {
+        transform: translate3d(0, 110vh, 0) rotateZ(360deg);
+        opacity: 0;
+      }
+    }
+
+    @keyframes confettiSwing {
+      0% {
+        transform: translateX(0);
+      }
+      50% {
+        transform: translateX(12px);
+      }
+      100% {
+        transform: translateX(-6px);
+      }
+    }
+
+    .celebration-emoji {
+      position: fixed;
+      bottom: -40px;
+      font-size: 2rem;
+      pointer-events: none;
+      animation: emojiFloat 2.8s ease-out forwards;
+      z-index: 10000;
+    }
+
+    @keyframes emojiFloat {
+      0% {
+        transform: translateY(0) scale(0.8);
+        opacity: 0;
+      }
+      20% {
+        opacity: 1;
+      }
+      80% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-90vh) scale(1.05) rotate(-8deg);
+        opacity: 0;
+      }
+    }
+
+    /* Glow especial no card de envio ao enviar mensagem */
+    .card-celebration {
+      animation: cardGlow 1.1s ease-out;
+    }
+
+    @keyframes cardGlow {
+      0% {
+        box-shadow: 0 0 0 rgba(255, 196, 138, 0.0);
+        transform: scale(1);
+      }
+      40% {
+        box-shadow: 0 0 30px rgba(255, 196, 138, 0.8);
+        transform: scale(1.01);
+      }
+      100% {
+        box-shadow: var(--shadow-soft);
+        transform: scale(1);
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -612,7 +739,7 @@
                       </div>
                     </div>
 
-                    <!-- select real, usado pela lógica existente (ficará escondido) -->
+                    <!-- select real, usado pela lógica existente (escondido) -->
                     <select id="nome-consulta" style="display:none;">
                       <option value="">Carregando nomes...</option>
                     </select>
@@ -639,7 +766,7 @@
           </section>
 
           <!-- Envio -->
-          <section class="card" aria-labelledby="envio-title">
+          <section class="card" id="envio-card" aria-labelledby="envio-title">
             <div class="card-inner">
               <div class="card-header">
                 <div class="card-header-icon" aria-hidden="true">✨</div>
@@ -656,13 +783,32 @@
                   <div class="fields">
                     <div class="field-group">
                       <label for="destinatario-select">Nome do destinatário</label>
-                      <!-- aqui continua o esquema original: input + select -->
-                      <input
-                        type="text"
-                        id="busca-destinatario"
-                        placeholder="Buscar nome do destinatário..."
-                      />
-                      <select id="destinatario-select">
+
+                      <!-- Combobox customizada para NOME DO DESTINATÁRIO -->
+                      <div class="combo" id="combo-destinatario">
+                        <button
+                          type="button"
+                          class="combo-display"
+                          id="destinatario-display"
+                        >
+                          <span class="combo-placeholder">Selecione um nome...</span>
+                          <span class="combo-display-icon">🔍</span>
+                        </button>
+                        <div class="combo-panel" id="destinatario-panel">
+                          <input
+                            type="text"
+                            class="combo-search"
+                            id="destinatario-search"
+                            placeholder="Buscar nome do destinatário..."
+                          />
+                          <div class="combo-list" id="destinatario-list">
+                            <!-- preenchido via JS com base no <select> -->
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- select real para destinatário (escondido) -->
+                      <select id="destinatario-select" style="display:none;">
                         <option value="">Carregando nomes...</option>
                       </select>
                       <small></small>
@@ -788,9 +934,11 @@
           selectEl.appendChild(opt);
         });
 
-        // Se for o select de consulta, inicializa a combobox customizada
+        // Inicializa combos após carregar opções
         if (selectEl.id === 'nome-consulta') {
-          initComboNomeConsulta();
+          initCombo('nome-consulta', 'nome-consulta-display', 'nome-consulta-panel', 'nome-consulta-search', 'nome-consulta-list');
+        } else if (selectEl.id === 'destinatario-select') {
+          initCombo('destinatario-select', 'destinatario-display', 'destinatario-panel', 'destinatario-search', 'destinatario-list');
         }
 
       } catch (err) {
@@ -887,43 +1035,18 @@
         .toLowerCase();
     }
 
-    // Filtra as opções de um <select> com base no termo de busca (usado no destinatário)
-    function filtrarOpcoesSelect(selectEl, termo) {
-      const termoNormalizado = normalizarTextoBusca(termo || '');
-
-      Array.from(selectEl.options).forEach((opt, index) => {
-        // Mantém sempre a primeira opção (placeholder)
-        if (index === 0) {
-          opt.hidden = false;
-          return;
-        }
-
-        const texto = opt.textContent || '';
-        const textoNormalizado = normalizarTextoBusca(texto);
-
-        opt.hidden = termoNormalizado && !textoNormalizado.includes(termoNormalizado);
-      });
-    }
-
-    // Combobox customizada para o campo "Nome" da consulta
-    function initComboNomeConsulta() {
-      const selectEl = document.getElementById('nome-consulta');
-      const displayBtn = document.getElementById('nome-consulta-display');
-      const panel = document.getElementById('nome-consulta-panel');
-      const searchInput = document.getElementById('nome-consulta-search');
-      const listContainer = document.getElementById('nome-consulta-list');
+    // Combobox genérica (usada em Nome da consulta e Nome do destinatário)
+    function initCombo(selectId, displayId, panelId, searchId, listId) {
+      const selectEl = document.getElementById(selectId);
+      const displayBtn = document.getElementById(displayId);
+      const panel = document.getElementById(panelId);
+      const searchInput = document.getElementById(searchId);
+      const listContainer = document.getElementById(listId);
 
       if (!selectEl || !displayBtn || !panel || !searchInput || !listContainer) return;
 
       function fecharPainel() {
         panel.classList.remove('is-open');
-      }
-
-      function abrirPainel() {
-        panel.classList.add('is-open');
-        searchInput.value = '';
-        renderizarLista('');
-        setTimeout(() => searchInput.focus(), 10);
       }
 
       function renderizarLista(termo) {
@@ -953,12 +1076,18 @@
           item.textContent = opt.textContent;
           item.addEventListener('click', () => {
             selectEl.value = opt.value;
-            // Atualiza texto exibido
             displayBtn.querySelector('.combo-placeholder').textContent = opt.textContent;
             fecharPainel();
           });
           listContainer.appendChild(item);
         });
+      }
+
+      function abrirPainel() {
+        panel.classList.add('is-open');
+        searchInput.value = '';
+        renderizarLista('');
+        setTimeout(() => searchInput.focus(), 10);
       }
 
       // Abre/fecha painel ao clicar no display
@@ -990,6 +1119,60 @@
       }
     }
 
+    // ✨ Efeito festivo criativo (confete + emojis)
+    function dispararCelebracao(tipo) {
+      const container = document.createElement('div');
+      container.className = 'confetti-container';
+
+      const cores = [
+        'var(--primary)',
+        'var(--primary-soft)',
+        'var(--accent-blue)',
+        'var(--accent-green)',
+        '#facc15',
+        '#ec4899'
+      ];
+
+      const totalPecas = tipo === 'welcome' ? 80 : 140;
+      for (let i = 0; i < totalPecas; i++) {
+        const piece = document.createElement('span');
+        piece.className = 'confetti-piece';
+        piece.style.left = Math.random() * 100 + '%';
+        piece.style.animationDuration = (2 + Math.random() * 1.8) + 's';
+        piece.style.animationDelay = (Math.random() * 1.2) + 's';
+        piece.style.backgroundColor = cores[Math.floor(Math.random() * cores.length)];
+        piece.style.transform = `scale(${0.8 + Math.random() * 0.7}) rotate(${Math.random() * 180}deg)`;
+        container.appendChild(piece);
+      }
+
+      // Emojis de celebração
+      const emojis = ['🎉', '👏', '✨', '💛'];
+      const totalEmojis = tipo === 'welcome' ? 6 : 10;
+      for (let i = 0; i < totalEmojis; i++) {
+        const emoji = document.createElement('div');
+        emoji.className = 'celebration-emoji';
+        emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        emoji.style.left = Math.random() * 100 + '%';
+        emoji.style.animationDuration = (2.2 + Math.random() * 1.3) + 's';
+        container.appendChild(emoji);
+      }
+
+      document.body.appendChild(container);
+
+      setTimeout(() => {
+        container.remove();
+      }, 4500);
+    }
+
+    function destacarCardEnvio() {
+      const envioCard = document.getElementById('envio-card');
+      if (!envioCard) return;
+      envioCard.classList.add('card-celebration');
+      setTimeout(() => {
+        envioCard.classList.remove('card-celebration');
+      }, 1200);
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       const formConsulta = document.getElementById('form-consulta');
       const cpfConsultaInput = document.getElementById('cpf-consulta');
@@ -1015,16 +1198,12 @@
       const aiSuggestionsContainer = document.getElementById('ai-suggestions');
       const aiSuggestionsList = document.getElementById('ai-suggestions-list');
 
-      const buscaDestinatarioInput = document.getElementById('busca-destinatario');
-
       // Carrega destinatários (já ordenados) em ambos os selects
       carregarDestinatarios(destinatarioSelect);
       carregarDestinatarios(nomeConsultaSelect);
 
-      // Filtro de busca para o campo "Nome do destinatário"
-      buscaDestinatarioInput.addEventListener('input', (e) => {
-        filtrarOpcoesSelect(destinatarioSelect, e.target.value);
-      });
+      // 🎉 Efeito de boas-vindas
+      setTimeout(() => dispararCelebracao('welcome'), 500);
 
       formConsulta.addEventListener('submit', async (event) => {
         event.preventDefault();
@@ -1190,11 +1369,15 @@
 
           await enviarMensagem(payload);
 
-          envioSucesso.textContent = 'Mensagem enviada com sucesso!';
+          envioSucesso.textContent = 'Mensagem enviada com sucesso! 🎉';
           envioSucesso.style.display = 'block';
 
           envioFormBody.style.display = 'none';
           envioPosSucesso.style.display = 'flex';
+
+          // 🎊 Celebração especial ao enviar mensagem
+          dispararCelebracao('send');
+          destacarCardEnvio();
         } catch (err) {
           console.error(err);
           envioErro.textContent = 'Erro ao enviar mensagem. Tente novamente.';
@@ -1226,8 +1409,6 @@
         envioSucesso.style.display = 'none';
         aiSuggestionsContainer.style.display = 'none';
         aiSuggestionsList.innerHTML = '';
-        buscaDestinatarioInput.value = '';
-        filtrarOpcoesSelect(destinatarioSelect, '');
       });
     });
   </script>
