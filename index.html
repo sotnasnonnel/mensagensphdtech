@@ -459,6 +459,16 @@
       align-items: center;
       gap: 4px;
     }
+
+    /* Barra de busca começa escondida e aparece quando o select é focado/clicado */
+    .search-input {
+      display: none;
+      margin-bottom: 6px;
+    }
+
+    .search-input.is-visible {
+      display: block;
+    }
   </style>
 </head>
 <body>
@@ -491,10 +501,11 @@
                 <div class="fields">
                   <div class="field-group">
                     <label for="nome-consulta">Nome</label>
-                    <!-- caixa de busca do nome para consulta -->
+                    <!-- barra de busca aparece apenas quando o select ganha foco/clique -->
                     <input
                       type="text"
                       id="busca-nome-consulta"
+                      class="search-input"
                       placeholder="Buscar nome..."
                     />
                     <select id="nome-consulta">
@@ -539,10 +550,11 @@
                   <div class="fields">
                     <div class="field-group">
                       <label for="destinatario-select">Nome do destinatário</label>
-                      <!-- caixa de busca do nome do destinatário -->
+                      <!-- barra de busca aparece apenas quando o select ganha foco/clique -->
                       <input
                         type="text"
                         id="busca-destinatario"
+                        class="search-input"
                         placeholder="Buscar nome do destinatário..."
                       />
                       <select id="destinatario-select">
@@ -784,6 +796,13 @@
       });
     }
 
+    // Mostra a barra de busca e foca nela quando o select é clicado/focado
+    function mostrarBarraBusca(inputEl) {
+      if (!inputEl) return;
+      inputEl.classList.add('is-visible');
+      setTimeout(() => inputEl.focus(), 10);
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       const formConsulta = document.getElementById('form-consulta');
       const cpfConsultaInput = document.getElementById('cpf-consulta');
@@ -815,6 +834,24 @@
       // Carrega destinatários (já ordenados) em ambos os selects
       carregarDestinatarios(destinatarioSelect);
       carregarDestinatarios(nomeConsultaInput);
+
+      // Ao clicar/focar no select de consulta, mostrar barra de busca de nome
+      nomeConsultaInput.addEventListener('focus', () => {
+        mostrarBarraBusca(buscaNomeConsultaInput);
+      });
+
+      nomeConsultaInput.addEventListener('click', () => {
+        mostrarBarraBusca(buscaNomeConsultaInput);
+      });
+
+      // Ao clicar/focar no select de destinatário, mostrar barra de busca
+      destinatarioSelect.addEventListener('focus', () => {
+        mostrarBarraBusca(buscaDestinatarioInput);
+      });
+
+      destinatarioSelect.addEventListener('click', () => {
+        mostrarBarraBusca(buscaDestinatarioInput);
+      });
 
       // Filtro de busca para o campo "Nome" (consulta)
       buscaNomeConsultaInput.addEventListener('input', (e) => {
