@@ -138,23 +138,6 @@
     .shell {
       max-width: 640px;
       margin: 0 auto;
-      animation: shellEnter 0.7s ease-out;
-      transform-origin: top center;
-    }
-
-    @keyframes shellEnter {
-      0% {
-        opacity: 0;
-        transform: translateY(18px) scale(0.98);
-      }
-      60% {
-        opacity: 1;
-        transform: translateY(0) scale(1.01);
-      }
-      100% {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
     }
 
     .stack {
@@ -477,51 +460,101 @@
       gap: 4px;
     }
 
-    /* 🎊 Confete festivo */
-    .confetti-container {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      overflow: hidden;
-      z-index: 9999;
+    /* Combobox customizada para o campo Nome (consulta) */
+    .combo {
+      position: relative;
     }
 
-    .confetti-piece {
+    .combo-display {
+      border-radius: 10px;
+      border: 1px solid var(--border-soft);
+      padding: 9px 10px;
+      font-size: 0.9rem;
+      background: #f9fafb;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .combo-display span.combo-placeholder {
+      color: var(--text-muted);
+    }
+
+    .combo-display-icon {
+      font-size: 0.85rem;
+      opacity: 0.7;
+    }
+
+    .combo-display:focus,
+    .combo-display:focus-visible {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);
+      background: #ffffff;
+    }
+
+    .combo-panel {
       position: absolute;
-      top: -10px;
-      width: 8px;
-      height: 14px;
-      border-radius: 2px;
-      opacity: 0;
-      animation-name: confettiFall, confettiSwing;
-      animation-timing-function: linear, ease-in-out;
-      animation-iteration-count: 1, infinite;
+      left: 0;
+      right: 0;
+      margin-top: 4px;
+      border-radius: 12px;
+      background: #ffffff;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      box-shadow: 0 16px 30px rgba(15, 23, 42, 0.18);
+      padding: 8px;
+      z-index: 50;
+      display: none;
     }
 
-    @keyframes confettiFall {
-      0% {
-        transform: translate3d(0, -100%, 0) rotateZ(0deg);
-        opacity: 1;
-      }
-      80% {
-        opacity: 1;
-      }
-      100% {
-        transform: translate3d(0, 110vh, 0) rotateZ(360deg);
-        opacity: 0;
-      }
+    .combo-panel.is-open {
+      display: block;
     }
 
-    @keyframes confettiSwing {
-      0% {
-        transform: translateX(0);
-      }
-      50% {
-        transform: translateX(12px);
-      }
-      100% {
-        transform: translateX(-6px);
-      }
+    .combo-search {
+      width: 100%;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      padding: 7px 10px;
+      font-size: 0.85rem;
+      margin-bottom: 6px;
+      background: #f9fafb;
+    }
+
+    .combo-search:focus {
+      border-color: var(--primary);
+      outline: none;
+      background: #ffffff;
+    }
+
+    .combo-list {
+      max-height: 210px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .combo-item {
+      width: 100%;
+      text-align: left;
+      border: none;
+      background: transparent;
+      padding: 6px 8px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: block;
+    }
+
+    .combo-item:hover {
+      background: rgba(195, 94, 30, 0.08);
+    }
+
+    .combo-empty {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      padding: 4px 2px;
     }
   </style>
 </head>
@@ -555,16 +588,36 @@
                 <div class="fields">
                   <div class="field-group">
                     <label for="nome-consulta">Nome</label>
-                    <!-- barra de busca sempre visível -->
-                    <input
-                      type="text"
-                      id="busca-nome-consulta"
-                      placeholder="Buscar nome..."
-                    />
-                    <select id="nome-consulta">
+
+                    <!-- Combobox customizada para NOME (consulta) -->
+                    <div class="combo" id="combo-nome-consulta">
+                      <button
+                        type="button"
+                        class="combo-display"
+                        id="nome-consulta-display"
+                      >
+                        <span class="combo-placeholder">Selecione um nome...</span>
+                        <span class="combo-display-icon">🔍</span>
+                      </button>
+                      <div class="combo-panel" id="nome-consulta-panel">
+                        <input
+                          type="text"
+                          class="combo-search"
+                          id="nome-consulta-search"
+                          placeholder="Buscar nome..."
+                        />
+                        <div class="combo-list" id="nome-consulta-list">
+                          <!-- preenchido via JS com base no <select> -->
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- select real, usado pela lógica existente (ficará escondido) -->
+                    <select id="nome-consulta" style="display:none;">
                       <option value="">Carregando nomes...</option>
                     </select>
                   </div>
+
                   <div class="field-group">
                     <label for="cpf-consulta">CPF</label>
                     <input type="text" id="cpf-consulta" inputmode="numeric" placeholder="00000000000 ou 000.000.000-00" />
@@ -603,7 +656,7 @@
                   <div class="fields">
                     <div class="field-group">
                       <label for="destinatario-select">Nome do destinatário</label>
-                      <!-- barra de busca sempre visível -->
+                      <!-- aqui continua o esquema original: input + select -->
                       <input
                         type="text"
                         id="busca-destinatario"
@@ -735,6 +788,11 @@
           selectEl.appendChild(opt);
         });
 
+        // Se for o select de consulta, inicializa a combobox customizada
+        if (selectEl.id === 'nome-consulta') {
+          initComboNomeConsulta();
+        }
+
       } catch (err) {
         console.error(err);
         selectEl.innerHTML = '<option value="">Erro ao carregar nomes</option>';
@@ -829,7 +887,7 @@
         .toLowerCase();
     }
 
-    // Filtra as opções de um <select> com base no termo de busca
+    // Filtra as opções de um <select> com base no termo de busca (usado no destinatário)
     function filtrarOpcoesSelect(selectEl, termo) {
       const termoNormalizado = normalizarTextoBusca(termo || '');
 
@@ -847,37 +905,89 @@
       });
     }
 
-    // 🎊 Confete festivo: usado na entrada e ao enviar mensagem
-    function dispararConfete() {
-      const container = document.createElement('div');
-      container.className = 'confetti-container';
+    // Combobox customizada para o campo "Nome" da consulta
+    function initComboNomeConsulta() {
+      const selectEl = document.getElementById('nome-consulta');
+      const displayBtn = document.getElementById('nome-consulta-display');
+      const panel = document.getElementById('nome-consulta-panel');
+      const searchInput = document.getElementById('nome-consulta-search');
+      const listContainer = document.getElementById('nome-consulta-list');
 
-      const cores = [
-        'var(--primary)',
-        'var(--primary-soft)',
-        'var(--accent-blue)',
-        'var(--accent-green)',
-        '#facc15',
-        '#ec4899'
-      ];
+      if (!selectEl || !displayBtn || !panel || !searchInput || !listContainer) return;
 
-      const quantidade = 120;
-      for (let i = 0; i < quantidade; i++) {
-        const piece = document.createElement('span');
-        piece.className = 'confetti-piece';
-        piece.style.left = Math.random() * 100 + '%';
-        piece.style.animationDuration = 2.5 + Math.random() * 1.5 + 's';
-        piece.style.animationDelay = Math.random() * 1.2 + 's';
-        piece.style.backgroundColor = cores[Math.floor(Math.random() * cores.length)];
-        piece.style.transform = `scale(${0.8 + Math.random() * 0.7})`;
-        container.appendChild(piece);
+      function fecharPainel() {
+        panel.classList.remove('is-open');
       }
 
-      document.body.appendChild(container);
+      function abrirPainel() {
+        panel.classList.add('is-open');
+        searchInput.value = '';
+        renderizarLista('');
+        setTimeout(() => searchInput.focus(), 10);
+      }
 
-      setTimeout(() => {
-        container.remove();
-      }, 4500);
+      function renderizarLista(termo) {
+        const termoNormalizado = normalizarTextoBusca(termo || '');
+        listContainer.innerHTML = '';
+
+        const opcoes = Array.from(selectEl.options).filter((opt, idx) => idx !== 0); // pula placeholder
+
+        const filtradas = opcoes.filter((opt) => {
+          const texto = opt.textContent || '';
+          const textoNormalizado = normalizarTextoBusca(texto);
+          return !termoNormalizado || textoNormalizado.includes(termoNormalizado);
+        });
+
+        if (!filtradas.length) {
+          const vazio = document.createElement('div');
+          vazio.className = 'combo-empty';
+          vazio.textContent = 'Nenhum nome encontrado.';
+          listContainer.appendChild(vazio);
+          return;
+        }
+
+        filtradas.forEach((opt) => {
+          const item = document.createElement('button');
+          item.type = 'button';
+          item.className = 'combo-item';
+          item.textContent = opt.textContent;
+          item.addEventListener('click', () => {
+            selectEl.value = opt.value;
+            // Atualiza texto exibido
+            displayBtn.querySelector('.combo-placeholder').textContent = opt.textContent;
+            fecharPainel();
+          });
+          listContainer.appendChild(item);
+        });
+      }
+
+      // Abre/fecha painel ao clicar no display
+      displayBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (panel.classList.contains('is-open')) {
+          fecharPainel();
+        } else {
+          abrirPainel();
+        }
+      });
+
+      // Filtra enquanto digita
+      searchInput.addEventListener('input', (e) => {
+        renderizarLista(e.target.value);
+      });
+
+      // Fecha ao clicar fora
+      document.addEventListener('click', (e) => {
+        if (!panel.contains(e.target) && e.target !== displayBtn) {
+          fecharPainel();
+        }
+      });
+
+      // Ajusta placeholder com base no valor atual, se houver
+      const selectedOption = selectEl.options[selectEl.selectedIndex];
+      if (selectedOption && selectedOption.value) {
+        displayBtn.querySelector('.combo-placeholder').textContent = selectedOption.textContent;
+      }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -891,7 +1001,7 @@
       const formEnvio = document.getElementById('form-envio');
       const envioFormBody = document.getElementById('envio-form-body');
       const destinatarioSelect = document.getElementById('destinatario-select');
-      const nomeConsultaInput = document.getElementById('nome-consulta');
+      const nomeConsultaSelect = document.getElementById('nome-consulta');
       const nomeRemetenteInput = document.getElementById('nome-remetente');
       const tomMensagemSelect = document.getElementById('tom-mensagem');
       const textoMensagemTextarea = document.getElementById('texto-mensagem');
@@ -905,43 +1015,16 @@
       const aiSuggestionsContainer = document.getElementById('ai-suggestions');
       const aiSuggestionsList = document.getElementById('ai-suggestions-list');
 
-      const buscaNomeConsultaInput = document.getElementById('busca-nome-consulta');
       const buscaDestinatarioInput = document.getElementById('busca-destinatario');
 
       // Carrega destinatários (já ordenados) em ambos os selects
       carregarDestinatarios(destinatarioSelect);
-      carregarDestinatarios(nomeConsultaInput);
-
-      // 🔍 Quando clicar/focar no select de consulta, joga foco para a barra de busca de nome
-      nomeConsultaInput.addEventListener('focus', () => {
-        buscaNomeConsultaInput.focus();
-      });
-
-      nomeConsultaInput.addEventListener('click', () => {
-        buscaNomeConsultaInput.focus();
-      });
-
-      // 🔍 Quando clicar/focar no select de destinatário, joga foco para a barra de busca de destinatário
-      destinatarioSelect.addEventListener('focus', () => {
-        buscaDestinatarioInput.focus();
-      });
-
-      destinatarioSelect.addEventListener('click', () => {
-        buscaDestinatarioInput.focus();
-      });
-
-      // Filtro de busca para o campo "Nome" (consulta)
-      buscaNomeConsultaInput.addEventListener('input', (e) => {
-        filtrarOpcoesSelect(nomeConsultaInput, e.target.value);
-      });
+      carregarDestinatarios(nomeConsultaSelect);
 
       // Filtro de busca para o campo "Nome do destinatário"
       buscaDestinatarioInput.addEventListener('input', (e) => {
         filtrarOpcoesSelect(destinatarioSelect, e.target.value);
       });
-
-      // 🎉 Confete de boas-vindas na entrada da página
-      setTimeout(dispararConfete, 500);
 
       formConsulta.addEventListener('submit', async (event) => {
         event.preventDefault();
@@ -951,7 +1034,7 @@
         consultaResultado.innerHTML = '';
         consultaStatus.textContent = '';
 
-        const nome = nomeConsultaInput.value;
+        const nome = nomeConsultaSelect.value;
         const cpf = cpfConsultaInput.value;
 
         if (!nome || !cpf) {
@@ -1107,14 +1190,11 @@
 
           await enviarMensagem(payload);
 
-          envioSucesso.textContent = 'Mensagem enviada com sucesso! 🎉';
+          envioSucesso.textContent = 'Mensagem enviada com sucesso!';
           envioSucesso.style.display = 'block';
 
           envioFormBody.style.display = 'none';
           envioPosSucesso.style.display = 'flex';
-
-          // 🎊 Confete especial ao enviar mensagem para outra pessoa
-          dispararConfete();
         } catch (err) {
           console.error(err);
           envioErro.textContent = 'Erro ao enviar mensagem. Tente novamente.';
